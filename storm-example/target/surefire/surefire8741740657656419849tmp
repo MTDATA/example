@@ -1,0 +1,5 @@
+#surefire
+#Thu Sep 12 19:18:34 CST 2013
+user.dir=/Users/judasheng/workspace/storm-example
+localRepository=/Users/judasheng/.m2/repository
+basedir=/Users/judasheng/workspace/storm-example
