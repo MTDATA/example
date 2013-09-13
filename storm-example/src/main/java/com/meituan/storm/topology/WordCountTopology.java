@@ -1,46 +1,49 @@
 package com.meituan.storm.topology;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import storm.kafka.KafkaSpout;
 import storm.kafka.SpoutConfig;
 import storm.kafka.StringScheme;
 import storm.kafka.KafkaConfig.ZkHosts;
-import storm.kafka.KafkaConfig.StaticHosts;
 import backtype.storm.Config;
 import backtype.storm.LocalCluster;
 import backtype.storm.StormSubmitter;
 import backtype.storm.topology.TopologyBuilder;
 import backtype.storm.tuple.Fields;
 
-import com.google.common.collect.ImmutableList;
 import com.meituan.storm.bolt.SplitBolt;
 import com.meituan.storm.bolt.WordCountBolt;
+import com.meituan.storm.config.StormKafkaConfig;
 
-/**
- * This topology demonstrates Storm's stream groupings and multilang
- * capabilities.
- */
 public class WordCountTopology {
-
-    /** Config Brokers information */
-    public static String brokersZkServers = "hadoop02:2181,hadoop03:2181,hadoop04:2181";
-    public static String brokersZkPath = "/kafka/brokers";
-
-    /** Config used to store kafka offset information **/
-	public static ImmutableList<String> zkServers = ImmutableList.of("hadoop02", "hadoop03", "hadoop04");
-    public static String zkRoot = "/storm/kafka"; 
-	public static String topic = "mobile_push_serviceorg";
-	public static Integer topicPartitionNum = 1;
-	public static String groupId = "mobile_push_serviceorg_test_group";
-
+	private static final Logger logger = LoggerFactory.getLogger(WordCountTopology.class);
+	
 	public static void main(String[] args) throws Exception {
-		//1. spout
+		
+		if (args.length < 1) {
+			logger.error("Usage: storm jar example-1.0.0-jar-with-dependencies.jar \\" +
+									"com.meituan.storm.topology.WordCountTopology \\" +
+									"/opt/meituan/storm_topology_config/WordCountTopology.proprites");
+			System.exit(-1);
+		}
+		
+		//1. load config
+		StormKafkaConfig skc = new StormKafkaConfig();
+		if (skc.loadFromFile(args[0]) == false) {
+			logger.error("load config file[" + args[0] + "] error");
+			System.exit(-1);
+		}
+		
+		//2. create spout
 		SpoutConfig spoutConfig = new SpoutConfig(
-                new ZkHosts(brokersZkServers, brokersZkPath), 
-                topic, zkRoot, groupId);
-	    spoutConfig.zkServers = zkServers;
-        spoutConfig.zkPort = 2181;
+                new ZkHosts(skc.kafkaZkServers, skc.kafkaZkBrokerPath), 
+                skc.consumerTopic, skc.topologyZkRoot, skc.consumerGroupId);
+	    //spoutConfig.zkServers = zkServers;
+        //spoutConfig.zkPort = 2181;
 		spoutConfig.scheme = new StringScheme(); 
-        spoutConfig.forceStartOffsetTime(-2);
+        spoutConfig.forceStartOffsetTime(skc.consumerTopicStartOffset);
         KafkaSpout kafkaSpout = new KafkaSpout(spoutConfig);
 
 		//2. create topology
@@ -51,21 +54,16 @@ public class WordCountTopology {
 
 		//3. submit topology
 		Config conf = new Config();
-		conf.setDebug(true);
-		if (args != null && args.length > 0) {
-			conf.setNumWorkers(3);
-
-			StormSubmitter.submitTopology(args[0], conf,
-					builder.createTopology());
-		} else {
+		conf.setDebug(skc.runDebugMode);
+		if (skc.runLocalMode) {
 			conf.setMaxTaskParallelism(3);
-
 			LocalCluster cluster = new LocalCluster();
-			cluster.submitTopology("word-count", conf, builder.createTopology());
-
+			cluster.submitTopology(skc.topologyName, conf, builder.createTopology());
 			Thread.sleep(300000);
-
 			cluster.shutdown();
+		} else {
+			conf.setNumWorkers(skc.topologyNumWorkers);
+			StormSubmitter.submitTopology(skc.topologyName, conf, builder.createTopology());
 		}
 	}
 }

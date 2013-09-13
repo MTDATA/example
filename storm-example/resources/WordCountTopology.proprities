@@ -1,0 +1,17 @@
+### global ###
+run_local_mode=0
+run_debug_mode=0
+
+### kafka config ###
+kafka_zk_servers=hadoop02:2181,hadoop03:2181,hadoop04:2181
+kafka_zk_broker_path=/kafka/brokers
+
+### topology config ###
+topology_name=wordcounter
+topology_num_workers=3
+topology_zk_root=/storm/kafka
+
+### kafka consumer config ###
+consumer_topic=mobile_push_serviceorg
+consumer_topic_start_offset=-1
+consumer_group_id=mobile_push_serviceorg__word_count_topology
