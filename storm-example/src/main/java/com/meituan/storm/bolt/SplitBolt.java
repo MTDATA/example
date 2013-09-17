@@ -16,7 +16,7 @@ public class SplitBolt extends BaseBasicBolt {
     }
 
     public void execute(Tuple tuple, BasicOutputCollector collector) {
-      String sentence = tuple.getString(0);
+      String sentence = new String(tuple.getBinary(0));
       System.out.println("======Bolt recv sentence[" + sentence + "]");
       String[] words = sentence.split(" ");
       for (String word : words) {
