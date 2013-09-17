@@ -36,6 +36,12 @@
 			<version>0.8.0-wip4</version>
 		</dependency>
 
+	    <dependency>
+	      <groupId>com.xorlev</groupId>
+	      <artifactId>storm-amqp-spout</artifactId>
+	      <version>0.2.0</version>
+	    </dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

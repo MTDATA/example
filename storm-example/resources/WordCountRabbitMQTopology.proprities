@@ -1,0 +1,16 @@
+### global ###
+run_local_mode=0
+run_debug_mode=0
+
+### storm config ###
+storm_host=10.64.32.26
+storm_port=5672
+storm_uesrname=storm
+storm_password=storm123
+storm_vhost=/originallog
+storm_exchange="abc"
+storm_routekey="mobile_push_serviceorg"
+
+### topology config ###
+topology_name=wordcounter
+topology_num_workers=3
