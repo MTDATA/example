@@ -49,7 +49,7 @@ public class WordCountRabbitMQTopology {
 		}
 		
 		//2. create spout
-		QueueDeclaration queueDeclaration = new ExclusiveQueueWithBinding("", skc.stormRoutekey);
+		QueueDeclaration queueDeclaration = new ExclusiveQueueWithBinding(skc.stormExchange, skc.stormRoutekey);
 		Scheme scheme = new RawScheme();
 		AMQPSpout spout = new AMQPSpout(skc.stormHost, skc.stormPort, 
 						skc.stormUsername, skc.stormPassword, skc.stormVhost, 
