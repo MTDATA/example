@@ -20,6 +20,7 @@ public class StormRabbitMQConfig {
 	public String stormPassword = null;
 	public String stormVhost = null;
 	public String stormExchange = null;
+	public String stormQueue = null;
 	public String stormRoutekey = null;
 	
 	public String topologyName = null;
@@ -85,6 +86,12 @@ public class StormRabbitMQConfig {
 		stormExchange = prop.getProperty("storm_exchange", null);
 		if (stormExchange == null || stormExchange.length() == 0) {
 			logger.error("StormRabbitMQConfig.loadFromFile storm_exchange is empty");
+			return false;
+		}
+		
+		stormQueue = prop.getProperty("storm_queue", null);
+		if (stormQueue == null || stormQueue.length() == 0) {
+			logger.error("StormRabbitMQConfig.loadFromFile storm_queue is empty");
 			return false;
 		}
 		

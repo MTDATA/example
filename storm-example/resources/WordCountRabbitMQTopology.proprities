@@ -9,6 +9,7 @@ storm_uesrname=storm
 storm_password=storm123
 storm_vhost=/originallog
 storm_exchange="abc"
+storm_queue="mobile_push_serviceorg"
 storm_routekey="mobile_push_serviceorg"
 
 ### topology config ###

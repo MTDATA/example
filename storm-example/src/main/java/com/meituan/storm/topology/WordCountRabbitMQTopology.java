@@ -19,8 +19,8 @@ import com.meituan.storm.bolt.SplitBolt;
 import com.meituan.storm.bolt.WordCountBolt;
 import com.meituan.storm.config.StormKafkaConfig;
 import com.meituan.storm.config.StormRabbitMQConfig;
-import com.rapportive.storm.amqp.ExclusiveQueueWithBinding;
 import com.rapportive.storm.amqp.QueueDeclaration;
+import com.rapportive.storm.amqp.SharedQueueWithBinding;
 import com.rapportive.storm.spout.AMQPSpout;
 
 public class WordCountRabbitMQTopology {
@@ -49,7 +49,7 @@ public class WordCountRabbitMQTopology {
 		}
 		
 		//2. create spout
-		QueueDeclaration queueDeclaration = new ExclusiveQueueWithBinding(skc.stormExchange, skc.stormRoutekey);
+		QueueDeclaration queueDeclaration = new SharedQueueWithBinding(skc.stormQueue, skc.stormExchange, skc.stormRoutekey);
 		Scheme scheme = new RawScheme();
 		AMQPSpout spout = new AMQPSpout(skc.stormHost, skc.stormPort, 
 						skc.stormUsername, skc.stormPassword, skc.stormVhost, 
